@@ -14,7 +14,7 @@ export default function Index() {
       <Link href={"/explore"}>Explore</Link>
       <Link href={"/profile"}>Profile</Link>
       <Link href={"/properties/1"}>Property</Link>
-      <Text className="text-blue-500">Home</Text>
+      <Text className="font-bold font-rubik text-3xl">Welcome to Real Estate App</Text>
     </View>
   );
 }

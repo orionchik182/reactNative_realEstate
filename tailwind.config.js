@@ -27,13 +27,17 @@ module.exports = {
         },
         black: {
           DEFAULT: "#000000",
+          bg: "#FFFFFF",
           100: "#8c8e98",
           200: "#666876",
           300: "#191d31",
           
         },
         danger: "#F75555"
-      }
+      },
+      fontSize: {
+        "18": "18px",
+      },      
     },
   },
   plugins: [],

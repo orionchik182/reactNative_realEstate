@@ -1,13 +1,34 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
 import icons from "@/constants/icons";
+import { Redirect, router } from "expo-router";
+import { login } from "@/lib/appwrite2";
+import { useGlobalContext } from "@/lib/global-provider";
 
 const SignIn = () => {
-  const handleLogin = () => {
-    console.log("Login");
+  const { refetch, isLoggedIn, loading } = useGlobalContext();
+
+  if (!loading && isLoggedIn) return <Redirect href="/" />;
+
+  const handleLogin = async () => {
+    const result = await login();
+    if (result) {
+      console.log("Login Success");
+      refetch();
+    } else {
+      Alert.alert("Error", "Failed to login");
+    }
   };
+
   return (
     <SafeAreaView className="h-full bg-black-bg">
       <ScrollView contentContainerClassName="h-full">
@@ -32,7 +53,11 @@ const SignIn = () => {
             className="bg-green-300 shadow-md shadow-zinc-300 px-10 py-4 mt-5 rounded-full w-full "
           >
             <View className="flex flex-row items-center justify-center gap-3">
-              <Image source={icons.google} className="w-6 h-6" resizeMode="contain"/>
+              <Image
+                source={icons.google}
+                className="w-6 h-6"
+                resizeMode="contain"
+              />
               <Text className="font-rubik-medium text-black-300 text-18">
                 Sign Up with Google
               </Text>

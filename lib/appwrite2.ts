@@ -42,7 +42,7 @@ export async function login() {
     const userId = url.searchParams.get("userId")?.toString();
     if (!secret || !userId) throw new Error("Failed to login");
 
-   const session = await account.createSession({
+    const session = await account.createSession({
       userId: userId,
       secret: secret,
     });
@@ -58,7 +58,7 @@ export async function login() {
 export async function logout() {
   try {
     await account.deleteSession({
-        sessionId: "current"
+      sessionId: "current",
     });
     return true;
   } catch (error) {
@@ -71,13 +71,11 @@ export async function getCurrentUser() {
   try {
     const user = await account.get();
     if (user.$id) {
-      const userAvatar = await avatar.getInitials({
-          name: user.name 
-      });
+      const userAvatar = `${config.endpoint}/avatars/initials?name=${encodeURIComponent(user.name)}&project=${config.projectId}`;
 
       return {
         ...user,
-        avatar: userAvatar.toString(),
+        avatar: userAvatar,
       };
     }
     return null;

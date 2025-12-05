@@ -79,7 +79,11 @@ export async function getCurrentUser() {
       };
     }
     return null;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 401 || error.message?.includes("missing scopes")) {
+      return null;
+    }
+
     console.error("Get User Error:", error);
     return null;
   }

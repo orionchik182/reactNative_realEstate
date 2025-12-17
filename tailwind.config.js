@@ -33,7 +33,8 @@ module.exports = {
           300: "#191d31",
           
         },
-        danger: "#F75555"
+        danger: "#F75555",
+        gray: "#BDBDBD"
       },
       fontSize: {
         "18": "18px",

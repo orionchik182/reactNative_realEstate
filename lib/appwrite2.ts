@@ -1,4 +1,4 @@
-import { Account, Avatars, Client, OAuthProvider } from "react-native-appwrite";
+import { Account, Avatars, Client, Databases, OAuthProvider, Query, TablesDB } from "react-native-appwrite";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
 
@@ -6,6 +6,11 @@ export const config = {
   platform: "com.jsm.realestate",
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
+  databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+  agentsTableId: "agents",
+  reviewsTableId: "reviews",
+  galleriesTableId: "galleries",
+  propertiesTableId: "properties",
 };
 
 export const client = new Client();
@@ -17,6 +22,9 @@ client
 
 export const account = new Account(client);
 export const avatar = new Avatars(client);
+export const databases = new Databases(client);
+
+export const tables = new TablesDB(client);
 
 export async function login() {
   try {
@@ -86,5 +94,55 @@ export async function getCurrentUser() {
 
     console.error("Get User Error:", error);
     return null;
+  }
+}
+
+export async function getLatestProperties() {
+  try {
+    const result = await tables.listRows({
+      databaseId: config.databaseId!,
+      tableId: config.propertiesTableId!,
+      queries: [
+        Query.orderDesc("$createdAt"), 
+        Query.limit(5),
+      ],
+    });
+
+    return result.rows;
+  } catch (error) {
+    console.error("Get Latest Properties Error:", error);
+    return [];
+  }
+}
+
+export async function getProperties({filter, query, limit}: {
+  filter: string;
+  query: string;
+  limit?: number;
+}) {
+  try {
+    const buildQuery = [Query.orderDesc("$createdAt")];
+    if (filter && filter !== "All") {
+      buildQuery.push(Query.equal("type", filter));
+    }
+    if (query) {
+      buildQuery.push(Query.or([
+        Query.search("name", query),
+        Query.search("address", query),
+        Query.search("type", query),
+      ]));
+    }
+    if (limit) {
+      buildQuery.push(Query.limit(limit));
+    }
+    const result = await tables.listRows({
+      databaseId: config.databaseId!,
+      tableId: config.propertiesTableId!,
+      queries: buildQuery,
+    });
+    return result.rows;
+  } catch (error) {
+    console.error("Get Properties Error:", error);
+    return [];
   }
 }

@@ -1,5 +1,5 @@
 import { useGlobalContext } from "@/lib/global-provider";
-import { Redirect, Slot } from "expo-router";
+import { Redirect, Slot, Stack } from "expo-router";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,5 +18,18 @@ export default function AppLayout() {
     return <Redirect href="/sign-in" />;
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen
+        name="property/[id]"
+        options={{
+          presentation: "card",
+          gestureEnabled: true,
+          headerShown: false,
+          fullScreenGestureEnabled: true,
+        }}
+      />
+    </Stack>
+  );
 }

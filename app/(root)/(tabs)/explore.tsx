@@ -4,11 +4,12 @@ import { router, useLocalSearchParams } from "expo-router";
 import useAppwrite from "@/lib/useAppwrite";
 import { getProperties } from "@/lib/appwrite2";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Card, CardItemProps } from "@/app/components/Cards";
+import { CardItemProps } from "@/app/components/Cards";
 import NoResults from "@/app/components/NoResults";
 import Search from "@/app/components/Search";
 import Filters from "@/app/components/Filters";
 import icons from "@/constants/icons";
+import Card from "@/app/components/Card";
 
 const Explore = () => {
   const params = useLocalSearchParams<{ filter?: string; query?: string }>();

@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-na
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import icons from "@/constants/icons";
-import images from "@/constants/images";
+
 import SettingsItem from "@/app/components/SettingsItem";
 import { settings } from "@/constants/data";
 import { useGlobalContext } from "@/lib/global-provider";

@@ -1,8 +1,10 @@
-import { View, Text } from "react-native";
+
 import React from "react";
 import { Tabs } from "expo-router";
 import TabIcon from "@/app/components/TabIcon";
 import icons from "@/constants/icons";
+
+
 
 const TabsLayout = () => {
   return (

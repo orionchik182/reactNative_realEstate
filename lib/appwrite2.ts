@@ -1,6 +1,38 @@
-import { Account, Avatars, Client, Databases, OAuthProvider, Query, TablesDB } from "react-native-appwrite";
+import { Account, Avatars, Client, Databases, Models, OAuthProvider, Query, TablesDB } from "react-native-appwrite";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
+
+interface Review extends Models.Document {
+  name: string;
+  rating: number;
+  review: string;
+  avatar: string;
+}
+
+interface Agent extends Models.Document {
+  name: string;
+  avatar: string;
+  email: string;
+  $id: string;
+}
+
+interface Property extends Models.Document {
+  name: string;
+  type: string;
+  description: string;
+  address: string;
+  price: number;
+  area: number;
+  bedrooms: number;
+  bathrooms: number;
+  rating: number;
+  facilities: string[];
+  image: string;      // Старое поле
+  images: string[];   // Новое поле (массив)
+  geolocation: string;
+  reviews: Review[];
+  agent: string | Agent;      // ID агента (если не делаешь populate)
+}
 
 export const config = {
   platform: "com.jsm.realestate",
@@ -147,13 +179,26 @@ export async function getProperties({filter, query, limit}: {
   }
 }
 
-export async function getPropertyById({id}: {id: string}) {
+export async function getPropertyById({ id }: { id: string }): Promise<Property | null> {
   try {
-    const property = await tables.getRow({
+    const result = await tables.getRow({
       databaseId: config.databaseId!,
       tableId: config.propertiesTableId!,
       rowId: id,
     });
+
+    const property = result as unknown as Property;
+
+    // Если у квартиры есть ID агента (и это строка), подгружаем его
+    if (property.agent && typeof property.agent === 'string') {
+      const agentData = await getAgentById({ id: property.agent });
+      
+      // Если агент найден, заменяем ID на объект
+      if (agentData) {
+        property.agent = agentData;
+      }
+    }
+
     return property;
   } catch (error) {
     console.error("Get Property By Id Error:", error);
@@ -161,3 +206,35 @@ export async function getPropertyById({id}: {id: string}) {
   }
 }
 
+export async function getReviews({ propertyId }: { propertyId: string }) {
+  try {
+    // ⚠️ ВАЖНО: Используем databases (стандартный SDK), а не tables (кастомный класс)
+    const response = await databases.listDocuments(
+      config.databaseId!,       // 1. ID базы данных
+      config.reviewsTableId!,   // 2. ID коллекции (reviews)
+      [                         // 3. Массив запросов
+        Query.equal("property", propertyId), 
+        Query.orderDesc("$createdAt"), 
+      ]
+    );
+
+    return response.documents;
+  } catch (error) {
+    console.error("Get Reviews Error:", error);
+    return [];
+  }
+}
+
+export async function getAgentById({id}: {id: string}): Promise<Agent | null> {
+  try {
+    const agent = await tables.getRow({
+      databaseId: config.databaseId!,
+      tableId: config.agentsTableId!,
+      rowId: id,
+    });
+    return agent as unknown as Agent;
+  } catch (error) {
+    console.error("Get Agent By Id Error:", error);
+    return null;
+  }
+}

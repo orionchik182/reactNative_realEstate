@@ -1,11 +1,13 @@
-import { Card, CardItemProps, FeaturedCard } from "@/app/components/Cards";
+import Card from "@/app/components/Card";
+import { CardItemProps } from "@/app/components/Cards";
+import FeaturedCard from "@/app/components/Cards";
 import Filters from "@/app/components/Filters";
 import NoResults from "@/app/components/NoResults";
 import Search from "@/app/components/Search";
 import icons from "@/constants/icons";
 import { getLatestProperties, getProperties } from "@/lib/appwrite2";
 import { useGlobalContext } from "@/lib/global-provider";
-import seed from "@/lib/seed";
+
 import useAppwrite from "@/lib/useAppwrite";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
